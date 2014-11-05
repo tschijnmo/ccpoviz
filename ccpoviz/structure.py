@@ -43,7 +43,8 @@ class Structure(object):
 
     .. py:attribute:: title
 
-      An optional title for the structure
+      An optional title for the structure, it can also be used for holding some
+      instructions for plotting.
 
     .. py:attribute:: atms
 
@@ -65,8 +66,6 @@ class Structure(object):
 
     """
 
-    # pylint: disable=too-few-public-methods
-
     __slots__ = [
         'title',
         'atms',
@@ -85,3 +84,32 @@ class Structure(object):
         """
 
         self.title = title
+        self.atms = []
+        self.bonds = []
+        self.latt_vecs = []
+
+    def extend_atms(self, atms_iter):
+
+        """Extends the atoms list by an iterator
+
+        Any iterator iterating over a linear list of atoms objects will work.
+
+        """
+
+        self.atms.extend(atms_iter)
+
+    def extend_bonds(self, bonds_iter):
+
+        """Extends the bonding list by an iterator
+
+        Any iterator iterating over a list of bonding triple will work.
+
+        """
+
+        self.bonds.extent(bonds_iter)
+
+    def set_latt_vecs(self, latt_vecs):
+
+        """Sets the lattice vectors"""
+
+        self.latt_vecs = latt_vecs

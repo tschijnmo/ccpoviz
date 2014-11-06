@@ -1,0 +1,16 @@
+{
+    // Camera related
+    "projection-method": "perspective",
+    "camera-focus": "molecule-centre",
+    "camera-distance": 20.0,
+    "camera-theta": 0.0,
+    "camera-phi": 90.0,
+    "camera-rotation": 0.0,
+    "aspect-ratio": 1.33333333,
+
+    // Light source related
+
+    // Background related
+
+    // Pov-ray invocation
+}

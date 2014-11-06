@@ -84,6 +84,9 @@ def gen_camera_ops(ops_dict, structure):
 
     :param ops_dict: The dictionary of options for the run
     :param structure: The structure to plot
+    :returns: A list of dictionaries for rendering the camera in the pov-ray
+        mustache template. The resulted list can be assigned to a key in the
+        rendering dictionary.
 
     """
 

@@ -73,3 +73,20 @@ def ensure_type(value, expected_type, tag='', terminate=True):
             )
     else:
         return res
+
+
+def wrap_str_list(str_list, tag='content'):
+
+    """Wraps a string list into a list of dictionaries for mustache rendering
+
+    In mustache, the non-empty list for sections needs to have entries of
+    dictionaries, where the template is able to get the information. When this
+    function is given a list of strings, a list of dictionaries is going to be
+    returned with the original strings stored with the tag given, which
+    defaults to ``content``.
+
+    """
+
+    return [
+        {tag: i} for i in str_list
+        ]

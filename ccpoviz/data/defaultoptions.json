@@ -20,5 +20,23 @@
 
     // Background related
 
+    // Atom texture
+    "element-textures":{
+        "default": {
+            "texture": [],
+            "pigment": [],
+            "use-colour": true,
+            "normal": [],
+            "finish": ["specular 0.5", "metallic"]
+            },
+    },
+
+    "element-colour-scheme": "Jmol",
+    "element-colour-change": {},
+
+    "element-radii": {
+        "default": 0.4
+    },
+
     // Pov-ray invocation
 }

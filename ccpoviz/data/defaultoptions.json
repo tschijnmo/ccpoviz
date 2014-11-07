@@ -38,5 +38,15 @@
         "default": 0.4
     },
 
+    // Bonds related
+    "compute-bonds": false,
+    "covalent-radii": {},
+    "multiple-bond-separation": 0.3,
+    "partial-bond-dash-size": 0.3,
+    "bond-texture": ["T_Wood7"],
+    "bond-pigment": [],
+    "bond-normal": [],
+    "bond-finish": [],
+
     // Pov-ray invocation
 }

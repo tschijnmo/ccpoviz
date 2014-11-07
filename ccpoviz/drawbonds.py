@@ -10,7 +10,7 @@ cylinders.
 After the conversion, the list of dictionaries for rendering the POV-Ray
 mustache templates is formed. Each dictionary consists of the following fields
 
-beg, end
+begin, end
     The two ends of the cylinder
 
 radius
@@ -28,7 +28,8 @@ import json
 import numpy as np
 import pkg_resources
 
-from .util import ensure_type, format_vector
+from .bonds2cylinder import bonds2cylinders
+from .util import ensure_type, format_vector, wrap_str_list
 
 
 def compute_bonds(structure, ops_dict):
@@ -119,3 +120,55 @@ def form_bonds_list(structure, ops_dict):
     return bonds
 
 
+def cylinder2pov(cylinders, ops_dict):
+
+    """Converts the internal cylinder data structure to pov-ray dictionaries
+
+    The cylinders should be in the intern data structure as defined in
+    :py:mod:`bonds2cylinder` module. Here in this implementation, just the
+    beginning and end points are actually used. Other fields in the structure
+    were intended to be helpful for possible future features.
+
+    The returned list of dictionaries has got the format documented in this
+    module.
+
+    """
+
+    # Get the bond representation parameters
+    radius = ops_dict['bond-cylinder-radius']
+    ensure_type(radius, float, 'bond-cylinder-radius')
+    texture = wrap_str_list(ops_dict['bond-texture'])
+    pigment = wrap_str_list(ops_dict['bond-pigment'])
+    normal = wrap_str_list(ops_dict['bond-normal'])
+    finish = wrap_str_list(ops_dict['bond-finish'])
+
+    return [
+        {
+            'begin': format_vector(i.beg_coord),
+            'end': format_vector(i.end_coord),
+            'radius': '%8.4f' % radius,
+            'texture': texture,
+            'pigment': pigment,
+            'normal': normal,
+            'finish': finish
+
+        }
+        for i in cylinders
+        ]
+
+
+def draw_bonds(structure, camera, ops_dict):
+
+    """Forms the bonds list"""
+
+    separation = ops_dict['multiple-bond-sepration']
+    ensure_type(separation, float, 'multiple-bond-separation')
+    dash_size = ops_dict['partial-bond-dash-size']
+    ensure_type(dash_size, float, 'partial-bond-dash-size')
+
+    bonds = compute_bonds(structure, ops_dict)
+    cylinders = bonds2cylinders(
+        bonds, structure.atms, camera, separation, dash_size
+        )
+
+    return cylinder2pov(cylinders, ops_dict)

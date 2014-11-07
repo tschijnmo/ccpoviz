@@ -43,6 +43,7 @@
     "covalent-radii": {},
     "multiple-bond-separation": 0.3,
     "partial-bond-dash-size": 0.3,
+    "bond-cylinder-radius": 0.1,
     "bond-texture": ["T_Wood7"],
     "bond-pigment": [],
     "bond-normal": [],

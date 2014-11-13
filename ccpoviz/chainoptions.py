@@ -148,7 +148,6 @@ prototype, prototype-key
 
 """
 
-import numbers
 import functools
 
 
@@ -197,8 +196,8 @@ _NUMBER = 1
 _BOOL = 2
 _STRING = 3
 _ATOMS = (1, 2, 3)
-_LIST = 2
-_MAP = 3
+_LIST = 4
+_MAP = 5
 
 
 def _find_type(node):
@@ -211,10 +210,10 @@ def _find_type(node):
 
     """
 
-    if isinstance(node, numbers.Number):
-        return _NUMBER
-    elif isinstance(node, bool):
+    if isinstance(node, bool):
         return _BOOL
+    elif isinstance(node, int) or isinstance(node, float):
+        return _NUMBER
     elif isinstance(node, str):
         return _STRING
     elif isinstance(node, list):
@@ -536,7 +535,7 @@ class ChainOptions(object):
                         )
                 else:
                     raise UpdateError(
-                        tag,
+                        tag + (k, ),
                         'invalid option'
                         )
         return new_map

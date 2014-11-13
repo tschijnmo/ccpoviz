@@ -213,7 +213,7 @@ _LIST = 4
 _MAP = 5
 
 
-def _find_type(node, tag=(, ), user=False):
+def _find_type(node, tag=('', ), user=False):
 
     """Finds the type of a node
 

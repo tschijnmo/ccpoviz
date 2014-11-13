@@ -213,13 +213,18 @@ _LIST = 4
 _MAP = 5
 
 
-def _find_type(node):
+def _find_type(node, tag=(, ), user=False):
 
     """Finds the type of a node
 
     :param node: The node to test
+    :param tag: The tag for the node to test
+    :param user: Boolean value to indicate if this is a user input. Set to
+        False when testing default nodes.
     :returns: One of the three module constants for the three types of nodes
-    :raises ValueError: if the node is not of the correct acceptable type.
+    :raises UpdateError, DefaultError: if the node is not of the correct
+        acceptable type, the actual type of the exception depends upon if it
+        is a user input.
 
     """
 
@@ -234,7 +239,11 @@ def _find_type(node):
     elif isinstance(node, dict):
         return _MAP
     else:
-        raise ValueError('unacceptable type %s' % type(node))
+        exception = UpdateError if user else DefaultError
+        raise exception(
+            tag,
+            'type %s of value %s is not accepted' % (type(node), node)
+            )
 
 
 #
@@ -251,7 +260,7 @@ def _report_type_error(tag, default):
 
     """
 
-    default_type = _find_type(default)
+    default_type = _find_type(default, tag=tag, user=False)
 
     if default_type == _NUMBER:
         expectation = 'number'
@@ -373,7 +382,7 @@ class ChainOptions(object):
 
         # Try to get the basis for the list elements
         proto = None  # prototype or basis
-        existing_type = _find_type(existing)
+        existing_type = _find_type(existing, tag=tag, user=False)
 
         # Try to get the meta-settings from an explicitly-given prototype or
         # key
@@ -476,8 +485,8 @@ class ChainOptions(object):
 
         """Updates an atom node"""
 
-        new_type = _find_type(new)
-        existing_type = _find_type(existing)
+        new_type = _find_type(new, tag=tag, user=True)
+        existing_type = _find_type(existing, tag=tag, user=False)
         coercion = context.get(
             tag[-1] + self.separator + 'coercion',
             self.default_coercion
@@ -496,7 +505,7 @@ class ChainOptions(object):
 
         """Updates a list node"""
 
-        new_type = _find_type(new)
+        new_type = _find_type(new, tag=tag, user=True)
 
         if new_type != _LIST:
             _report_type_error(tag, existing)
@@ -544,7 +553,7 @@ class ChainOptions(object):
 
         """Updates a map node"""
 
-        new_type = _find_type(new)
+        new_type = _find_type(new, tag=tag, user=True)
         if new_type != _MAP:
             _report_type_error(tag, existing)
 
@@ -612,7 +621,7 @@ class ChainOptions(object):
 
         """
 
-        existing_type = _find_type(existing)
+        existing_type = _find_type(existing, tag=tag, user=False)
 
         # The main selection
         if existing_type in _ATOMS:
@@ -669,5 +678,5 @@ class ChainOptions(object):
         return '\n'.join([
             'At option setting ',
             '   ' + location,
-            'error occurred since %s' % error
+            'error occurred since %s.' % error
             ])

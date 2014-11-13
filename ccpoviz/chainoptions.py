@@ -3,25 +3,33 @@ Chaining options together
 =========================
 
 Frequently we have to chain several option settings together, often from
-several levels of configuration scope, like system level, user level, project
-level, individual file level. Although the :py:mod:`collections` library
-provides the ``ChainMap`` class for facilitating this purpose from Python 3.3
-on, it still lacks some composability and flexibility for more complex
-configurations. Hence this module contains utilities for this purpose.
+several levels of configuration scope, like default value, system level, user
+level, project level, individual file level. Although the standard
+``collections`` library provides the ``ChainMap`` class for facilitating this
+purpose from Python 3.3 on, it still lacks some composability and flexibility
+for more complex configurations. Hence this module contains utilities for this
+purpose. Also emphasis is put on verifying the correctness of the user input
+and reporting the accurate position of the erroneous input.
 
 The chaining mechanism here is mostly inspired by the usage of JSON as
 configurations files, which has become more and more popular in recent years,
 like the ``package.json`` used by npm, Grunt and the configuration files used
-for Sublime Text and most of its add-on packages. However, it is in no way
+by Sublime Text and most of its add-on packages. However, it is in no way
 restricted to JSON. It operates directly on a model for option configurations
 that is expressible in basic Python as well as quite a wide myriad of other
-common computer languages. So it could work in conjunction with any file
-readers able to translate the configuration in the file into this model. The
-model for a configuration consists of
+common modern computer languages. So it could work in conjunction with any
+file, environment variable, or command line argument readers able to translate
+the configuration into this model. The model for a configuration consists of
 
 Atom
-    Atoms can be string, number, boolean or ``null``, as supported in JSON.
-    They are the terminal leaf nodes in the parse tree of a configuration,
+    Atoms can be string, number, boolean, as supported in JSON. They are the
+    terminal leaf nodes in the parse tree of a configuration. It needs to be
+    noted that ``null`` is not a possible selection. The most frequent usage
+    of null is the invocation of the default value, which is hard coded into
+    the program. But here the more advocated approach is to put the default
+    values together in a central place and invoke the default value by
+    omitting the option in later configurations. Simple omission would be a
+    much simpler way of invoking the default than having to assign a ``null``.
 
 Map
     Mapping from **string** to values. Object in the JSON terms or dictionary
@@ -34,33 +42,37 @@ List
 Value
     A value can be an atom, a map, or a list.
 
-And a configuration is a map acting as the root of the parse tree. All options
-of the program should have got a definite position within this tree. The
-recursive structure here can be seen as a restriction of the space of valid
-python expressions formed from the atoms, lists and dictionaries. Primarily,
-the first restriction is that the key in the dictionary has to be string. This
-makes it a general model that is supported by JSON and able to be
-transliterated into basically any other programming languages, since string is
-a data type that is universally present and well-suited to be used for option
-configurations. The second restriction is the uniformity of the values in
-lists. This would greatly reduce the complexity of the model and ease its
-configuration without greatly sacrificing the flexibility of the model.
+And a configuration of the options of the program is a map acting as the root
+of the parse tree. All options of the program should have got a definite
+position within this tree. The recursive structure here can be seen as a
+restriction of the space of valid python expressions formed from the atoms,
+lists and dictionaries. Primarily, the first restriction is that the key in the
+dictionary has to be string. This makes it a general model that is supported by
+JSON and able to be transliterated into basically any other programming
+languages, since string is a data type that is universally present and well-
+suited to be used for option configurations. The second restriction is the
+uniformity of the values in lists. This would greatly reduce the complexity of
+the model and ease its configuration without greatly sacrificing the
+flexibility of the model.
 
 After the clearance about the definition of terms, here is the basic idea of
-this module. By options usually we mean settings about the program that has got
-default values hence optional. So the chain options data type here operates by
-semi-programmably patching the default configuration. The way that each option
-is updated and verified can be set by specially-named **siblings** of the
-option in the map where the option is in. Being options of options, these
-siblings are going to be termed meta-options. The string tag for the meta-
-option is formed by appending a separator and a meta-option tag to the tag for
-the option. In this way, in contrast to the verbose `JSON schema`_, here simple
-configuration can be kept simple, while complex configuration can be
-achievable, since no extra level in the parse tree is added. Also, JSON schema
-gives the acceptable type for each option explicitly, here the verification of
-the later options can be based on the values of the default options, which
-serves two purposes of both default value and data type settings here. This is
-more convenient for the purpose of setting program options.
+this module. By options usually we mean settings about the program that has
+got default values hence optional. So the ``ChainOptions`` data type here
+operates by semi-programmably patching the default configuration from later
+input. The way that each option is updated and verified can be set by
+specially-named **siblings** of the option in the map where the option is in.
+Being options of options, these siblings are going to be termed meta-options.
+The string tag for the meta- option is formed by appending a separator and a
+meta-option tag to the tag for the option. In this way, in contrast to the
+verbose `JSON schema`_, here simple configuration can be kept simple, while
+complex configuration can be achievable, since no extra level in the parse
+tree is added. Also, JSON schema gives the acceptable type for each option
+explicitly, here the verification of the later options can be based on the
+values of the default options, which serves two purposes of both default value
+and data type settings here. This is more convenient for the purpose of
+setting program options. Due to the scarcity of clean code supporting multiple
+types for the same program option, the flexibility of the model will not be
+significantly restricted.
 
 For an example of a meta-option, if we have got an list option named
 ``highlight-patterns`` with the default value of ``["spam", "eggs"]``, when the
@@ -95,31 +107,32 @@ this chaining mechanism just based on the model for the configuration and is
 not restricted to JSON configurations at all. Small code can be written to
 translate options from the ini-style configuration, environmental variables, or
 even command line arguments to the nested structure elaborated above. Then they
-can be chained together to the final set of configurations. Just other ways of
-configuration might lack some of the flexibility of JSON. Like it would be hard
-to configure settings in nested maps from command lines arguments. The purpose
-of this module is to make a code easily configurable in a variety ways and
-scopes by using just a default configuration coded either in JSON or Python.
+can be chained together to form the final set of configurations. Just other
+ways of configuration might lack some of the flexibility of JSON. Like it would
+be hard to configure settings in nested maps from command lines arguments. The
+purpose of this module is to make a code easily configurable in a variety ways
+and scopes by using just a default configuration coded either in JSON or
+Python.
 
 Here are the detailed documentation of the meta-options for the options
 
 update
     The way the value is going to be updated by the later configurations.
-    Acceptable values depend on the type of the setting that it configures. For
-    atoms, the only value and the default value is ``overwrite``, which will
-    cause the old value to be overwritten by the new value. For lists, the
-    acceptable values include ``overwrite``, which is the default and will make
-    the new list overwrite the old list, and ``prepend`` and ``append``, which
-    will prepend or append the new list onto the previous value. ``unique`` is
-    also supported for list, which will merge the two lists but keep unique
-    values only. Note that ``unique`` is for lists of atoms only. For maps, the
-    default is ``modify``, which will set existing keys according to their
-    ``update`` setting and issue error for any new keys not originally present.
-    If it is not desired, ``extend`` can be used so that new keys not present
-    in the previous configuration can be excepted. Please note that this
-    assumes that the map, at least for the entries added to the default value,
-    is a uniform one like a list. So prototype needs to be provided as
-    explained later.
+    Acceptable values depend on the type of the setting that it configures.
+    For atoms, the only value and the default value is ``overwrite``, which
+    will cause the old value to be overwritten by the new value. For lists,
+    the acceptable values include ``overwrite``, which is the default and will
+    make the new list overwrite the old list, and ``prepend`` and ``append``,
+    which will prepend or append the new list onto the previous value.
+    ``unique`` is also supported for list, which will merge the two lists but
+    keep unique values only. Note that ``unique`` is for lists of atoms only.
+    For maps, the default is ``modify``, which will set existing keys
+    according to their ``update`` setting and issue error for any new keys not
+    originally present. If it is not desired, ``extend`` can be used so that
+    new keys not present in the previous configuration can be excepted. Please
+    note that this assumes that the map, at least for the entries that is
+    newly added, is a uniform one like a list. So prototype needs to be
+    provided as explained later.
 
 coercion
     A boolean value for atomic values. If set to true, type coercion is going
@@ -177,7 +190,7 @@ class DefaultError(Exception):
     """The class for reporting errors in the default settings
 
     This error is raised if there is something wrong with the default value.
-    Different from the exception class :py:exec:`UpdateError`, this exception
+    Different from the exception class :py:exc:`UpdateError`, this exception
     is mostly results of programmer error rather than user error. So it is
     advised not to catch it.
 
@@ -243,7 +256,7 @@ def _report_type_error(tag, default):
     if default_type == _NUMBER:
         expectation = 'number'
     elif default_type == _BOOL:
-        expectation = 'boolean value'
+        expectation = 'boolean'
     elif default_type == _STRING:
         expectation = 'string'
     elif default_type == _LIST:
@@ -253,7 +266,10 @@ def _report_type_error(tag, default):
     else:
         assert 0
 
-    raise UpdateError(tag, 'a %s is expected' % expectation)
+    raise UpdateError(
+        tag,
+        'a value of type %s is expected' % expectation
+        )
 
 
 #
@@ -269,12 +285,8 @@ class ChainOptions(object):
     This is an implementation of the options chainer described in this module.
     The implementation emphasizes flexibility is its usage. Basically all the
     default values for the meta-options can be set in the initializer and
-    stored as attributes. Then the :py:meth:`set_default` method can be invoked
-    to set the default value. Next the method :py:meth:`patch_options` can be
-    called multiple times to patch the options at various levels of scope onto
-    the default value. If any problem happens, :py:exc:`ValueError` will be
-    raised. After all the desired option settings has been patched, the method
-    :py:meth:`get_final_options` can be called for the final set of options.
+    stored as attributes. Then the :py:meth:`chain_options` method can be
+    invoked to do the actual job of chaining the options together.
 
     .. py:attribute:: separator
 
@@ -310,7 +322,7 @@ class ChainOptions(object):
     def __init__(self, separator='...', proto_tag='prototype',
                  default_list_update='overwrite',
                  default_map_update='overwrite', default_coercion=False):
-            # pylint: disable=too-many-arguments
+        # pylint: disable=too-many-arguments
 
         """Initializes the options chainer according to the default values"""
 
@@ -327,6 +339,24 @@ class ChainOptions(object):
         This is useful for adding new entries to list or maps. If no prototype
         or prototype update method is found in the context, the default value
         for the entries in the existing node will be used.
+
+        Getting the prototype is generally straightforward to understand. For
+        the virtual context, it is needed whenever a new node is added to the
+        options tree. Generally, meta-options for each option node should be a
+        sibling to the actual option node. But for new nodes added based on a
+        prototype, the location of the new node added and the prototype is
+        actually different, with the prototype one level higher. To make the
+        settings consist towards users, the meta-options for the prototypes
+        are put as siblings to the prototypes by using essentially the same
+        format in the key as the normal nodes. In addition, for nodes in a
+        list, since the list cannot have a special entry to hold the meta-
+        options for the actual nodes, we have to put it one-level (or levels
+        for nested-list) higher into the dictionary holding the list. From
+        this discrepancy of the location of the prototype and the actual
+        location of nodes that is added based on it, we need to pass the meta-
+        options for the prototype downwards somehow. In this implementation,
+        the meta-settings of the prototype is found and bundled into a special
+        context called virtual context.
 
         :param tag: The tag for the node within the context
         :param context: The context (dictionary) in which the node is
@@ -411,6 +441,23 @@ class ChainOptions(object):
 
         return (proto, virt_context)
 
+    def remove_proto(self, tag):
+
+        """Removes the prototype tags from the tag path
+
+        When adding a new node to the option tree and thus updating from the
+        prototype, a dummy layer with the prototype tag is added to the tags
+        path to be able to get the meta-options from the virtual context. This
+        extra-layer might cause some confusion on the user when the error
+        message is tried to be deciphered. So this function is added to be able
+        to remove the technical layers for cleaner error position directly
+        corresponding to the user input, if the pretty formatter chooses to not
+        to print the special tags.
+
+        """
+
+        return tuple(i for i in tag if i != self.proto_tag)
+
     #
     # ### Node update methods ###
     #
@@ -420,7 +467,9 @@ class ChainOptions(object):
     # ``tag`` is the tuple giving the location of the **new** node is the new
     # option configuration. And ``context`` is the dictionary for finding the
     # meta-options. Usually it is the parent of the existing node in the old
-    # configuration tree, or a virtual context for the prototype.
+    # configuration tree, or a virtual context for the prototype. The last
+    # element of the tag is always used for finding the meta-options in the
+    # context.
     #
 
     def _update_atom(self, existing, new, tag, context):
@@ -455,6 +504,7 @@ class ChainOptions(object):
         # Get the tag of the setting
         tag_in_context = tag[-1]
 
+        # Forward the virtual context
         proto, proto_context = self._get_proto(
             tag_in_context, context, existing
             )
@@ -579,7 +629,7 @@ class ChainOptions(object):
 
     def chain_options(self, *ops):
 
-        """Chain multiple set of options together
+        """Chains multiple set of options together
 
         The options should be given as the positional arguments of this method.
         The last one is the default option, and the earlier ones takes higher
@@ -592,3 +642,32 @@ class ChainOptions(object):
             lambda d, u: self._update_node(d, u, ('', ), d),
             reversed(ops[:-1]), ops[-1]
             )
+
+    def format_update_error(self, update_error):
+
+        """Formats an update error exception into a pretty string
+
+        Note that this function just returns a string based on an exception
+        object, it does not either catch or throw the actual exception. It will
+        also not terminate the program. This is just a reference implementation
+        of an error message formatter. Programs are encouraged to implement
+        their own error message formatter based on individual needs or
+        aesthetic taste.
+
+        :param update_error: The :py:instance:`UpdateError` instance to format
+        :returns: A string describing the error to the user
+
+        """
+
+        tags = [
+            i if isinstance(i, str) else str(i)
+            for i in self.remove_proto(update_error.args[0])[1:]
+            ]
+        location = ' / '.join(tags)
+        error = update_error.args[1]
+
+        return '\n'.join([
+            'At option setting ',
+            '   ' + location,
+            'error occurred since %s' % error
+            ])

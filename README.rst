@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/tschijnmo/ccpoviz.svg
+    :target: https://travis-ci.org/tschijnmo/ccpoviz
+
 ccpoviz
 =======
 

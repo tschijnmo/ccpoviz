@@ -12,7 +12,7 @@ import itertools
 
 import numpy as np
 
-from .structure import Atom, Structure
+from .structure import Atm, Structure
 
 
 def get_gjf_sections(file_name):
@@ -33,7 +33,7 @@ def get_gjf_sections(file_name):
         input_file = open(file_name, 'r')
     except IOError as err:
         raise IOError(
-            'The given Gaussian input file cannot be opened!\n' + err.value
+            'The given Gaussian input file cannot be opened!\n' + err.args
             )
     lines = [i.strip() for i in input_file]
     return [
@@ -49,8 +49,8 @@ def parse_coord(lines):
     :param lines: The section for coordinates of the atoms
     :raises ValueError: If the format is not correct
     :returns: A pair, with the first field being the list of atomic
-        coordinates, the second being the lattices vectors. ``None`` for non-
-        periodic systems.
+        coordinates, the second being the lattices vectors. Empty list for
+        non-periodic systems,
 
     """
 
@@ -59,21 +59,21 @@ def parse_coord(lines):
     # skip the charge and spin multiplicity
     for i in lines[1:]:
         fields = i.split()
-        symbol = fields[0]
+        symb = fields[0]
         try:
             coord = np.array(fields[1:3], type=np.float64)
-        except ValueError as ve:
+        except ValueError as verr:
             raise ValueError(
-                'Corrupt atomic coordinate in gjf file:\n' + ve.value
+                'Corrupt atomic coordinate in gjf file:\n' + verr.args
                 )
-        atms.append(Atom(symbol=symbol, coord=coord))
+        atms.append(Atm(symb=symb, coord=coord))
         continue
 
     latt_vecs = [i[1] for i in atms if i[0] == 'Tv']
 
     return (
         [i for i in atms if i[0] != 'Tv'],
-        None if latt_vecs == [] else latt_vecs
+        latt_vecs
         )
 
 
@@ -88,20 +88,24 @@ def parse_connectivity(lines):
 
     bonds = []
 
-    for l in lines:
-        fields = l.split()
+    for l_i in lines:
+        fields = l_i.split()
         try:
+            # Need to convert one-based input to zero-based indices
             start = int(fields[0]) - 1
-            args = [iter(fields[1:])] * 2
-            for conn in itertools.izip_longest(*args, fillvalue=''):
+            # Parition into pairs, based on the official recipe in
+            # itertools
+            it1 = iter(fields[1:])
+            it2 = it1
+            for conn in itertools.izip_longest(it1, it2, fillvalue=None):
                 end = int(conn[0]) - 1
                 bond_order = float(conn[1])
                 bonds.append(
                     (start, end, bond_order)
                     )
-        except ValueError as ve:
+        except ValueError as verr:
             raise ValueError(
-                'Corrupt connectivity in gjf file:\n' + ve.value
+                'Corrupt connectivity in gjf file:\n' + verr.args
                 )
 
     return bonds
@@ -127,7 +131,7 @@ def parse_gjf(file_name):
     if len(sections) > 3:
         bonds = parse_connectivity(sections[3])
     else:
-        bonds = None
+        bonds = []
 
     struct = Structure(title)
     struct.extend_atms(atms)

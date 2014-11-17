@@ -15,12 +15,14 @@ import collections
 # Atom class
 # ----------
 #
-# A simple class for atoms with just a symbol and coordinate.
+# A simple class for atoms with just a symbol and coordinate. Note that all
+# concepts of atoms are written as ``atm`` in this package, so are symbol as
+# ``symb``, coordinate as ``coord``.
 #
 
 
-Atom = collections.namedtuple('Atom', [
-    'symbol',
+Atm = collections.namedtuple('Atm', [
+    'symb',
     'coord',
     ])
 
@@ -49,20 +51,21 @@ class Structure(object):
     .. py:attribute:: atms
 
       The list of atoms in the structure. The entries can be any type as long
-      as they have got attribute ``symbol`` for the element symbol and
-      ``coord`` for a numpy array of its coordinate. Any duck type works here.
+      as they have got attribute ``symb`` for the element symbol and ``coord``
+      for a numpy array of its coordinate. Any duck type works here, but the
+      :py:class:`Atm` class of this module is recommended to be used.
 
     .. py:attribute:: bonds
 
       A list of bonds in the structure. Its entries should be tuples where the
-      first two fields gives the zero-based indices of the atoms connected by
-      the bond. And the next entry gives the bond order, which can be a float-
-      point number to indicate partial bond.
+      first two fields gives the **zero-based** indices of the atoms connected
+      by the bond. And the next entry gives the bond order, which can be a
+      float-point number to indicate partial bond.
 
     .. py:attribute: latt_vecs
 
       A list of three numpy vectors for the lattice vectors of the structure if
-      it is crystalline. It should be set to ``None`` for molecules.
+      it is crystalline. It should be set to an empty list for molecules.
 
     """
 
@@ -106,7 +109,7 @@ class Structure(object):
 
         """
 
-        self.bonds.extent(bonds_iter)
+        self.bonds.extend(bonds_iter)
 
     def set_latt_vecs(self, latt_vecs):
 

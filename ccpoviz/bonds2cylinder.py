@@ -3,7 +3,7 @@ Converting bonds into a list of cylinders
 =========================================
 
 The bonds in the bonds list of the :py:class:`Structure` objects are chemical
-rather than graphical objects. First it does not handel the partial bonds. And
+rather than graphical objects. First it does not handel the multiple bonds. And
 it does not handle partial bonds as well.
 
 In this module, functions are defined that is able to convert a list of bonds
@@ -13,7 +13,7 @@ plotting.
 """
 
 import math
-import collection
+import collections
 
 import numpy as np
 from numpy import linalg
@@ -112,13 +112,11 @@ def resolve_multiple_bond(atms, camera, separation, bond):
     move_amts = compute_mov_amts(separation, n_bonds)
 
     res = []
-    for i, v in enumerate(move_amts):
-        beg = atms[bond[0]].coord + v * move_dir
-        end = atms[bond[1]].coord + v * move_dir
-        if i != len(move_amts) - 1:
-            res.append((beg, end, False))
-        else:
-            res.append((beg, end, if_partial))
+    for i, amt in enumerate(move_amts):
+        beg = atms[bond[0]].coord + amt * move_dir
+        end = atms[bond[1]].coord + amt * move_dir
+        res.append((beg, end,
+                    if_partial if i == len(move_amts) - 1 else False))
 
     return res
 
@@ -135,15 +133,13 @@ def to_partial(cylinder, dash_size):
     """
 
     vec = cylinder[1] - cylinder[0]
-    vec_norm = np.norm(cylinder)
+    vec_norm = linalg.norm(vec)
     one_step = vec / vec_norm * dash_size
 
     # draw the cylinders one by one until it is going to exceed the full length
-
     dashes = []
-    if_dash = True
-    dist = 0.0
-
+    if_dash = True  # if we are currently drawing a dash
+    dist = 0.0  # the distance covered
     beg = cylinder[0]
     while dist + dash_size < vec_norm:
 
@@ -152,14 +148,14 @@ def to_partial(cylinder, dash_size):
             dashes.append((beg, end))
 
         beg = end
-        dist = dist + dash_size
+        dist += dash_size
         if_dash = not if_dash
 
     # draw the last step
     if if_dash:
         dashes.append((beg, cylinder[1]))
 
-    return dash_size
+    return dashes
 
 
 #
@@ -183,7 +179,7 @@ def to_partial(cylinder, dash_size):
 #
 
 
-BondCylinder = collection.named_tuple(
+BondCylinder = collections.namedtuple(
     'BondCylinder',
     [
         'beg_coord',

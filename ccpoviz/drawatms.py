@@ -12,16 +12,20 @@ radius
     A float giving the radius of the sphere
 
 texture, pigment, normal, finish
-    Each are going to hold a list of dictionaries with strings under the tag
-    ``content``. The strings should be put into the correct position in the
-    pov-ray file.
+    Each are going to hold a list of strings holding the settings of the
+    options in Pov-ray. The strings should be put into the correct position in
+    the pov-ray file.
+
+The resulted dictionary can be used in pov-ray input file mustache template
+rendering directly.
 
 """
 
 import json
 import pkg_resources
+import copy
 
-from .utils import ensure_type, terminate_program, wrap_str_list, format_vector
+from .util import terminate_program, format_vector
 
 
 def get_radius(elem_symb, ops_dict):
@@ -30,7 +34,6 @@ def get_radius(elem_symb, ops_dict):
 
     radius_dict = ops_dict['element-radii']
     radius = radius_dict.get(elem_symb, radius_dict['default'])
-    ensure_type(radius, float, 'Atomic radius for %s' % elem_symb)
 
     return radius
 
@@ -72,17 +75,17 @@ def get_texture(elem_symb, colour_dict, ops_dict):
     """
 
     textures_dict = ops_dict['element-textures']
-    raw_texture = textures_dict['default']
+    # Make a copy, even the explicitly given ones are based on the default.
+    raw_texture = copy.deepcopy(textures_dict['default'])
     if elem_symb in textures_dict:
         raw_texture.update(raw_texture[elem_symb])
 
-    texture_list = wrap_str_list(raw_texture['texture'])
-    raw_pigment_list = raw_texture['pigment']
+    texture_list = raw_texture['texture']
+    pigment_list = raw_texture['pigment']
     if raw_texture['use-color']:
-        raw_pigment_list.append('colour %s' % colour_dict[elem_symb])
-    pigment_list = wrap_str_list(raw_pigment_list)
-    normal_list = wrap_str_list(raw_texture['normal'])
-    finish_list = wrap_str_list(raw_texture['finish'])
+        pigment_list.append('colour %s' % colour_dict[elem_symb])
+    normal_list = raw_texture['normal']
+    finish_list = raw_texture['finish']
 
     return {
         'texture': texture_list,

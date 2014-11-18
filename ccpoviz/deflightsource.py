@@ -9,8 +9,9 @@ not have to intervene at all. However, some options are presented for better
 visualization effect. The options are
 
 location
-    Where the centre of the light source is. By default it is going to be one
-    unit above the location of the camera
+    Where the centre of the light source is relative to the location of the
+    camera. By default it is going to be one unit above the location of the
+    camera
 
 size
     The size of the area light. By default it is two units by two units
@@ -21,7 +22,8 @@ number
 
 focus
     Where the light is going to focus. By default it is going to focus on the
-    same point as the camera.
+    same point as the camera. So this vector is given relative to the location
+    of the camera focus.
 
 rotation
     A roll rotation for the square area of the light source. It might not ever
@@ -37,7 +39,7 @@ import math
 import numpy as np
 from numpy import linalg
 
-from .utils import format_vector, terminate_program, ensure_type
+from .util import format_vector, terminate_program
 
 
 def compute_rotation(beg_vec, end_vec):
@@ -54,9 +56,9 @@ def compute_rotation(beg_vec, end_vec):
     beg_n = beg_vec / linalg.norm(beg_vec)
     end_n = end_vec / linalg.norm(end_vec)
 
-    v = np.cross(beg_n, end_n)
-    s = linalg.norm(v)
-    c = np.dot(beg_n, end_n)
+    v = np.cross(beg_n, end_n)  # pylint: disable=invalid-name
+    s = linalg.norm(v)  # pylint: disable=invalid-name
+    c = np.dot(beg_n, end_n)  # pylint: disable=invalid-name
 
     v_cross = np.array([
         [0.0, -v[2], v[1]],
@@ -90,6 +92,8 @@ def gen_light_ops(cam_loc, cam_foc, ops_dict):
 
     """
 
+    # pylint: disable=too-many-locals
+
     try:
         loc_diff = np.array(ops_dict['light-location'], dtype=np.float64)
         foc_diff = np.array(ops_dict['light-focus'], dtype=np.float64)
@@ -103,10 +107,8 @@ def gen_light_ops(cam_loc, cam_foc, ops_dict):
 
     # In the same vein as the pov-ray camera, we rotation the z unit
     rotation = ops_dict['camera-rotation']
-    ensure_type(rotation, float, 'camera-rotation')
     rotation *= math.pi * 2.0 / 360.0
     size = ops_dict['camera-size']
-    ensure_type(size, float, 'camera-size')
 
     z_unit = np.array([0.0, 0.0, 1.0])
     base1 = np.array([
@@ -135,6 +137,3 @@ def gen_light_ops(cam_loc, cam_foc, ops_dict):
         'light-adaptive': light_adaptive_value,
         'light-jitter': ops_dict['light-jitter']
     }
-
-
-

@@ -17,19 +17,18 @@ radius
     The radius
 
 texture, pigment, normal, finish
-    The texture attributes, with each being a list of dictionaries holding the
-    actual options under the tag ``content``.
+    The texture attributes, with each being a list of strings.
 
 """
 
 import itertools
 import json
 
-import numpy as np
+from numpy import linalg
 import pkg_resources
 
 from .bonds2cylinder import bonds2cylinders
-from .util import ensure_type, format_vector, wrap_str_list
+from .util import format_vector
 
 
 def compute_bonds(structure, ops_dict):
@@ -43,7 +42,7 @@ def compute_bonds(structure, ops_dict):
 
     """
 
-    default_radii = json.reads(
+    default_radii = json.loads(
         pkg_resources.resource_string(__name__, 'data/covradius.json')
         )
     default_radii.update(
@@ -61,7 +60,7 @@ def compute_bonds(structure, ops_dict):
         coord2 = atm2[1].coord
 
         threshold = default_radii[symb1] + default_radii[symb2]
-        dist = np.norm(coord1 - coord2)
+        dist = linalg.norm(coord1 - coord2)
 
         if dist < threshold:
             bonds.append(
@@ -86,8 +85,11 @@ def update_bonds(existing_bonds, new_bonds):
 
     for b_i in new_bonds:
 
+        idxes = b_i[0:2] if b_i[0] < b_i[1] else (b_i[1], b_i[0])
+
         try:
-            old_idx = existing_bonds.index(b_i)
+            old_idx = (i for i, e_b in enumerate(existing_bonds)
+                       if e_b[0:2] == idxes)
         except ValueError:
             bonds.append(
                 b_i if b_i[0] < b_i[1] else (b_i[1], b_i[0], b_i[2])
@@ -136,11 +138,10 @@ def cylinder2pov(cylinders, ops_dict):
 
     # Get the bond representation parameters
     radius = ops_dict['bond-cylinder-radius']
-    ensure_type(radius, float, 'bond-cylinder-radius')
-    texture = wrap_str_list(ops_dict['bond-texture'])
-    pigment = wrap_str_list(ops_dict['bond-pigment'])
-    normal = wrap_str_list(ops_dict['bond-normal'])
-    finish = wrap_str_list(ops_dict['bond-finish'])
+    texture = ops_dict['bond-texture']
+    pigment = ops_dict['bond-pigment']
+    normal = ops_dict['bond-normal']
+    finish = ops_dict['bond-finish']
 
     return [
         {
@@ -162,11 +163,9 @@ def draw_bonds(structure, camera, ops_dict):
     """Forms the bonds list"""
 
     separation = ops_dict['multiple-bond-sepration']
-    ensure_type(separation, float, 'multiple-bond-separation')
     dash_size = ops_dict['partial-bond-dash-size']
-    ensure_type(dash_size, float, 'partial-bond-dash-size')
 
-    bonds = compute_bonds(structure, ops_dict)
+    bonds = form_bonds_list(structure, ops_dict)
     cylinders = bonds2cylinders(
         bonds, structure.atms, camera, separation, dash_size
         )

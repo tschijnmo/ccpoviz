@@ -9,8 +9,8 @@ options for the camera.
 In order to specify a camera, the parameters needed are
 
 focus
-    The focus of the camera, where to look at. Normally this is going to be the
-    centre of the molecule by default.
+    The focus of the camera, where to look at. Given relative to the centre of
+    the molecule.
 
 distance
     The distance from the camera to the focus.
@@ -33,7 +33,7 @@ import math
 
 import numpy as np
 
-from .utils import format_vec, terminate_program, ensure_type
+from .util import format_vector, terminate_program
 
 
 def compute_pos_ops(focus, distance, theta, phi, rotation, aspect_ratio):
@@ -49,6 +49,8 @@ def compute_pos_ops(focus, distance, theta, phi, rotation, aspect_ratio):
 
     """
 
+    # pylint: disable=too-many-arguments
+
     camera_pos = np.array([
         math.sin(theta) * math.cos(phi), math.sin(theta) * math.sin(phi),
         math.cos(theta)
@@ -62,11 +64,11 @@ def compute_pos_ops(focus, distance, theta, phi, rotation, aspect_ratio):
     right_vec = np.array([-aspect_ratio, 0.0, 0.0])
 
     ret_val = [
-        ('location', format_vec(camera_pos)),
-        ('up', format_vec(up_vec)),
-        ('right', format_vec(right_vec)),
-        ('sky', format_vec(sky_vec)),
-        ('look_at', format_vec(focus))
+        ('location', format_vector(camera_pos)),
+        ('up', format_vector(up_vec)),
+        ('right', format_vector(right_vec)),
+        ('sky', format_vector(sky_vec)),
+        ('look_at', format_vector(focus))
     ]
 
     return [
@@ -92,12 +94,11 @@ def gen_camera_ops(ops_dict, structure):
 
     # First we need to find the focus out
     focus_inp = ops_dict['camera-focus']
-    if focus_inp == 'molecule-centre':
-        focus = np.mean([
-            i.coord for i in structure.atms
-            ], axis=0)
-    elif type(focus_inp) == list and len(focus_inp) == 3:
-        focus = np.array(focus_inp)
+    focus = np.mean([
+        i.coord for i in structure.atms
+        ], axis=0)
+    if len(focus_inp) == 3:
+        focus += np.array(focus_inp)
     else:
         terminate_program(
             'Invalid camera-focus option: %r' % focus_inp
@@ -105,21 +106,16 @@ def gen_camera_ops(ops_dict, structure):
 
     # Other parameters
     distance = ops_dict['camera-distance']
-    ensure_type(distance, float, tag='camera-distance')
 
     to_radian = 2 * math.pi / 360.0
     theta = ops_dict['camera-theta']
-    ensure_type(theta, float, tag='camera-theta')
     theta *= to_radian
     phi = ops_dict['camera-phi']
-    ensure_type(phi, float, tag='camera-phi')
     phi *= to_radian
     rotation = ops_dict['camera-rotation']
-    ensure_type(rotation, float, 'camera-rotation')
     rotation *= to_radian
 
     aspect_ratio = ops_dict['aspect-ratio']
-    ensure_type(aspect_ratio, float, 'aspect-ratio')
 
     return compute_pos_ops(
         focus, distance, theta, phi, rotation, aspect_ratio

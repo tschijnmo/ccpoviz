@@ -73,6 +73,9 @@ def get_options(mol_ops, mol, proj_ops):
         pkg_resources.resource_string(__name__, 'data/defaultoptions.json')
         )
 
+    config_dicts = []
+    # Configuration dictionaries, starting with ones with higher priority
+
     if mol_ops == 'input-title':
         yaml_lines = get_lines_sentinel(
             mol.title, r'^ *--- *$', r'^ *\.\.\. *$'
@@ -90,13 +93,15 @@ def get_options(mol_ops, mol, proj_ops):
                 terminate_program(
                     'The title of the input file cannot be parsed'
                     )
+        config_dicts.append(mol_dict)
         config_files = [proj_ops, ]
     else:
-        mol_dict = None
         config_files = [mol_ops, proj_ops]
 
-    config_dicts = []
     for i in config_files:
+
+        if i is None:
+            continue
 
         try:
             file_obj = open(i, 'r')
@@ -113,8 +118,7 @@ def get_options(mol_ops, mol, proj_ops):
         else:
             config_dicts.append(json.loads(content))
 
+    config_dicts.append(default)
+
     chainer = ChainOptions()
-    if mol_dict is None:
-        return chainer.chain_options(config_dicts[0], config_dicts[1], default)
-    else:
-        return chainer.chain_options(mol_dict, config_dicts[0], default)
+    return chainer.chain_options(*config_dicts)  # pylint: disable=star-args

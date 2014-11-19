@@ -71,8 +71,8 @@ def compute_rotation(beg_vec, end_vec):
         return matrix
     else:
         return matrix  + v_cross + (
-        (np.dot(v_cross, v_cross) * ((1 - c) / (s ** 2)))
-        )
+            (np.dot(v_cross, v_cross) * ((1 - c) / (s ** 2)))
+            )
 
 
 def gen_light_ops(cam_loc, cam_foc, ops_dict):

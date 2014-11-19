@@ -573,7 +573,7 @@ class ChainOptions(object):
         # Make a shallow copy of the old map
         new_map = dict(existing)
         # Update the old ones according to the new ones
-        for k, v in new.iteritems():
+        for k, v in new.iteritems():  # pylint: disable=invalid-name
 
             # Have a check about the new mapping key
             if k.find(self.separator) != -1:

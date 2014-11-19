@@ -89,7 +89,7 @@ def update_bonds(existing_bonds, new_bonds):
 
         try:
             old_idx = next(i for i, e_b in enumerate(existing_bonds)
-                       if e_b[0:2] == idxes)
+                           if e_b[0:2] == idxes)
         except StopIteration:
             bonds.append(
                 b_i if b_i[0] < b_i[1] else (b_i[1], b_i[0], b_i[2])

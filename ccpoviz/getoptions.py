@@ -69,6 +69,8 @@ def get_options(mol_ops, mol, proj_ops):
 
     """
 
+    # pylint: disable=too-many-branches
+
     default = json.loads(
         pkg_resources.resource_string(__name__, 'data/defaultoptions.json')
         )
@@ -82,16 +84,29 @@ def get_options(mol_ops, mol, proj_ops):
             )
         if len(yaml_lines) != 0:
             import yaml
-            mol_dict = yaml.load('\n'.join(yaml_lines))
+            try:
+                mol_dict = yaml.load('\n'.join(yaml_lines))
+            except yaml.parser.ParserError as err:
+                terminate_program(
+                    'Input title cannot be parsed as YAML.\n' +
+                    ('%s' % err)
+                    )
         else:
             json_lines = get_lines_sentinel(
                 mol.title, r'^ *\{', r'\} *$'
                 )
             if len(json_lines) != 0:
-                mol_dict = json.loads('\n'.join(json_lines))
+                try:
+                    mol_dict = json.loads('\n'.join(json_lines))
+                except ValueError as verr:
+                    terminate_program(
+                        'Input title cannot be parsed as JSON.\n' +
+                        ('%s' % verr)
+                        )
             else:
                 terminate_program(
-                    'The title of the input file cannot be parsed'
+                    'The title of the input file cannot be '
+                    'found to be JSON or YAML'
                     )
         config_dicts.append(mol_dict)
         config_files = [proj_ops, ]
@@ -114,11 +129,22 @@ def get_options(mol_ops, mol, proj_ops):
 
         if i.endswith(('.yml', '.yaml')):
             import yaml
-            config_dicts.append(yaml.load(content))
+            try:
+                config_dicts.append(yaml.load(content))
+            except yaml.parser.ParserError as err:
+                terminate_program(
+                    ('Configuration file %i cannot be parsed as YAML \n' % i) +
+                    ('%s' % err)
+                    )
         else:
-            config_dicts.append(json.loads(content))
+            try:
+                config_dicts.append(json.loads(content))
+            except ValueError as err:
+                terminate_program(
+                    ('Configuration file %i cannot be parsed as JSON \n' % i) +
+                    ('%s' % err)
+                    )
 
     config_dicts.append(default)
 
-    chainer = ChainOptions()
-    return chainer.chain_options(*config_dicts)  # pylint: disable=star-args
+    return ChainOptions().chain_options(*config_dicts)  # pylint: disable=star-args

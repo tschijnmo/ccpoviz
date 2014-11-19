@@ -62,11 +62,15 @@ def run_pov(output_file, if_keep, ops_dict):
     else:
         additional_arg = []
 
-    ret_code = run_pov_core(
-        ops_dict['pov-ray-program'], input_file, output_file,
-        ops_dict['graph-width'], ops_dict['aspect-ratio'],
-        additional_arg=additional_arg
-        )
+    try:
+        ret_code = run_pov_core(
+            ops_dict['pov-ray-program'], input_file, output_file,
+            ops_dict['graph-width'], ops_dict['aspect-ratio'],
+            additional_arg=additional_arg
+            )
+    except OSError:
+        terminate_program('Pov-ray cannot be invoked!')
+
     if ret_code != 0:
         terminate_program('Pov-ray returned with error!')
 

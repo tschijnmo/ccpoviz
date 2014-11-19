@@ -90,8 +90,11 @@ def get_texture(elem_symb, colour_dict, ops_dict):
     return {
         'texture': texture_list,
         'pigment': pigment_list,
+        'has-pigment': len(pigment_list) != 0,
         'normal': normal_list,
-        'finish': finish_list
+        'has-normal': len(normal_list) != 0,
+        'finish': finish_list,
+        'has-finish': len(finish_list) != 0,
         }
 
 

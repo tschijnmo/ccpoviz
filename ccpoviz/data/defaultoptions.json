@@ -12,8 +12,8 @@
     "light-size": 2.0,
     "light-number": 5,
     "light-rotation": 0.0,
-    "light-colour": "white",
-    "light-adaptive": false,
+    "light-colour": "White",
+    "light-adaptive": -1,
     "light-jitter": true,
 
     "background-colour": "",

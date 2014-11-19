@@ -148,11 +148,14 @@ def cylinder2pov(cylinders, ops_dict):
             'begin': format_vector(i.beg_coord),
             'end': format_vector(i.end_coord),
             'radius': '%8.4f' % radius,
+            # texture options
             'texture': texture,
             'pigment': pigment,
+            'has-pigment': len(pigment) != 0,
             'normal': normal,
-            'finish': finish
-
+            'has-normal': len(normal) != 0,
+            'finish': finish,
+            'has-finish': len(finish) != 0,
         }
         for i in cylinders
         ]

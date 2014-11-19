@@ -12,19 +12,25 @@ texture {
     {{#texture}}
     {{{.}}}
     {{/texture}}
+    {{#has-pigment}}
     pigment {
         {{#pigment}}
         {{{.}}}
         {{/pigment}}
     }
+    {{/has-pigment}}
+    {{#has-normal}}
     normal {
         {{#normal}}
         {{{.}}}
         {{/normal}}
     }
+    {{/has-normal}}
+    {{#has-finish}}
     finish {
         {{#finish}}
         {{{.}}}
         {{/finish}}
     }
+    {{/has-finish}}
 }

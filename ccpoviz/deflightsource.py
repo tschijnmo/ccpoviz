@@ -66,7 +66,11 @@ def compute_rotation(beg_vec, end_vec):
         [-v[1], v[0], 0.0]
         ])
 
-    return np.identity(3) + v_cross + (
+    matrix = np.identity(3)
+    if abs(s) < 1.0E-4:
+        return matrix
+    else:
+        return matrix  + v_cross + (
         (np.dot(v_cross, v_cross) * ((1 - c) / (s ** 2)))
         )
 
@@ -123,10 +127,10 @@ def gen_light_ops(cam_loc, cam_foc, ops_dict):
 
     # Process the adaptive a little bit to conform to the moustache requirement
     light_adaptive_inp = ops_dict['light-adaptive']
-    if not light_adaptive_inp:
-        light_adaptive_value = light_adaptive_inp
+    if light_adaptive_inp < 0:
+        light_adaptive_value = False
     else:
-        light_adaptive_value = {'light-adaptive-value': light_adaptive_value}
+        light_adaptive_value = light_adaptive_value
 
     return {
         'light-location': format_vector(loc),

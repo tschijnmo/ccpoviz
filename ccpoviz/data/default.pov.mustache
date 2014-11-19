@@ -43,7 +43,9 @@ light_source {
     {{{light-location}}}
     color {{{light-colour}}}
     area_light {{{light-area-vec-1}}}, {{{light-area-vec-2}}}, {{{light-number}}}, {{{light-number}}}
-    adaptive {{{light-adaptive}}}
+    {{#light-adaptive}}
+    adaptive {{{.}}}
+    {{/light-adaptive}}
     {{#light-jitter}}jitter{{/light-jitter}}
 }
 

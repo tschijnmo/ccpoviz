@@ -16,7 +16,8 @@ import os
 from .util import terminate_program
 
 
-def run_pov_core(povray_prog, input_file, output_file, width, aspect_ratio):
+def run_pov_core(povray_prog, input_file, output_file, width, aspect_ratio,
+                 additional_arg=None):
 
     """Invokes the pov-ray program
 
@@ -31,13 +32,16 @@ def run_pov_core(povray_prog, input_file, output_file, width, aspect_ratio):
 
     """
 
+    # pylint: disable=too-many-arguments
+
+    additional_arg = [] or additional_arg
     height = round(width / aspect_ratio)
 
     return subprocess.call(
         [
             povray_prog, '+I%s' % input_file, '+W%d' % width,
             '+H%d' % height, '+O%s' % output_file
-        ]
+        ] + additional_arg
         )
 
 
@@ -53,10 +57,15 @@ def run_pov(output_file, if_keep, ops_dict):
     """
 
     input_file = output_file.split('.')[0] + '.pov'
+    if ops_dict['background-colour'] == '':
+        additional_arg = ['+UA']
+    else:
+        additional_arg = []
 
     ret_code = run_pov_core(
         ops_dict['pov-ray-program'], input_file, output_file,
-        ops_dict['graph-width'], ops_dict['aspect_ratio']
+        ops_dict['graph-width'], ops_dict['aspect_ratio'],
+        additional_arg=additional_arg
         )
     if ret_code != 0:
         terminate_program('Pov-ray returned with error!')

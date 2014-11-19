@@ -43,13 +43,14 @@ def main():
     args = parser.parse_args()
 
     # Read the molecule
-    structure = read_structure(args.input, args.reader)
+    input_file = args.INPUT[0]
+    structure = read_structure(input_file, args.reader)
 
     # Get the options
     options = get_options(args.molecule_option, structure, args.project_option)
 
-    if args.output is not None:
-        output = args.input.split('.')[0] + '.png'
+    if args.output is None:
+        output = input_file.split('.')[0] + '.png'
     else:
         output = args.output
 

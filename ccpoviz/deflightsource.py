@@ -106,9 +106,9 @@ def gen_light_ops(cam_loc, cam_foc, ops_dict):
     direction = foc - loc
 
     # In the same vein as the pov-ray camera, we rotation the z unit
-    rotation = ops_dict['camera-rotation']
+    rotation = ops_dict['light-rotation']
     rotation *= math.pi * 2.0 / 360.0
-    size = ops_dict['camera-size']
+    size = ops_dict['light-size']
 
     z_unit = np.array([0.0, 0.0, 1.0])
     base1 = np.array([

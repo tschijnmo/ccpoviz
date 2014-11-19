@@ -107,7 +107,7 @@ def resolve_multiple_bond(atms, camera, separation, bond):
 
     move_dir = compute_mov_dir(atms, camera, bond)
 
-    n_bonds = math.ceil(bond[2])
+    n_bonds = int(math.ceil(bond[2]))
     if_partial = (n_bonds - bond[2]) > 0.1
     move_amts = compute_mov_amts(separation, n_bonds)
 
@@ -227,7 +227,7 @@ def bonds2cylinders(bonds, atms, camera, separation, dash_size):
             cylinders.extend(
                 BondCylinder(beg_coord=i[0], end_coord=i[1],
                              beg_atm=bond_i[0], end_atm=bond_i[1],
-                             sn=sn_i, total_order=bond_i[2],
+                             bond_sn=sn_i, total_order=bond_i[2],
                              if_partial=if_partial)
                 for i in dashes
                 )

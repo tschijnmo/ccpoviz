@@ -82,7 +82,7 @@ def get_texture(elem_symb, colour_dict, ops_dict):
 
     texture_list = raw_texture['texture']
     pigment_list = raw_texture['pigment']
-    if raw_texture['use-color']:
+    if raw_texture['use-colour']:
         pigment_list.append('colour %s' % colour_dict[elem_symb])
     normal_list = raw_texture['normal']
     finish_list = raw_texture['finish']

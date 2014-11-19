@@ -88,15 +88,15 @@ def update_bonds(existing_bonds, new_bonds):
         idxes = b_i[0:2] if b_i[0] < b_i[1] else (b_i[1], b_i[0])
 
         try:
-            old_idx = (i for i, e_b in enumerate(existing_bonds)
+            old_idx = next(i for i, e_b in enumerate(existing_bonds)
                        if e_b[0:2] == idxes)
-        except ValueError:
+        except StopIteration:
             bonds.append(
                 b_i if b_i[0] < b_i[1] else (b_i[1], b_i[0], b_i[2])
                 )
             continue
 
-        if abs(new_bonds[2] - 0.0) < 0.1:
+        if abs(b_i[2] - 0.0) < 0.1:
             del bonds[old_idx]
         else:
             bonds[old_idx] = b_i
@@ -162,7 +162,7 @@ def draw_bonds(structure, camera, ops_dict):
 
     """Forms the bonds list"""
 
-    separation = ops_dict['multiple-bond-sepration']
+    separation = ops_dict['multiple-bond-separation']
     dash_size = ops_dict['partial-bond-dash-size']
 
     bonds = form_bonds_list(structure, ops_dict)

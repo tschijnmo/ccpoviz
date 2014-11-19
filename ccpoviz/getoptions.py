@@ -82,13 +82,13 @@ def get_options(mol_ops, mol, proj_ops):
             )
         if len(yaml_lines) != 0:
             import yaml
-            mol_dict = yaml.load(''.join(yaml_lines))
+            mol_dict = yaml.load('\n'.join(yaml_lines))
         else:
             json_lines = get_lines_sentinel(
                 mol.title, r'^ *\{', r'\} *$'
                 )
             if len(json_lines) != 0:
-                mol_dict = json.loads(''.join(json_lines))
+                mol_dict = json.loads('\n'.join(json_lines))
             else:
                 terminate_program(
                     'The title of the input file cannot be parsed'

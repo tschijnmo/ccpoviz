@@ -64,7 +64,7 @@ def run_pov(output_file, if_keep, ops_dict):
 
     ret_code = run_pov_core(
         ops_dict['pov-ray-program'], input_file, output_file,
-        ops_dict['graph-width'], ops_dict['aspect_ratio'],
+        ops_dict['graph-width'], ops_dict['aspect-ratio'],
         additional_arg=additional_arg
         )
     if ret_code != 0:

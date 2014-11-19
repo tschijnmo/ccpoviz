@@ -61,7 +61,7 @@ def parse_coord(lines):
         fields = i.split()
         symb = fields[0]
         try:
-            coord = np.array(fields[1:3], type=np.float64)
+            coord = np.array(fields[1:4], dtype=np.float64)
         except ValueError as verr:
             raise ValueError(
                 'Corrupt atomic coordinate in gjf file:\n' + verr.args
@@ -133,7 +133,9 @@ def parse_gjf(file_name):
     else:
         bonds = []
 
-    struct = Structure(title)
-    struct.extend_atms(atms)
-    struct.extend_bonds(bonds)
-    struct.set_latt_vecs(latt_vecs)
+    structure = Structure(title)
+    structure.extend_atms(atms)
+    structure.extend_bonds(bonds)
+    structure.set_latt_vecs(latt_vecs)
+
+    return structure

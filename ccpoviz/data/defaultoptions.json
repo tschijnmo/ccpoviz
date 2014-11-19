@@ -1,5 +1,4 @@
 {
-    // Camera related
     "projection-method": "perspective",
     "camera-focus": [0.0, 0.0, 0.0],
     "camera-distance": 20.0,
@@ -8,7 +7,6 @@
     "camera-rotation": 0.0,
     "aspect-ratio": 1.33333333,
 
-    // Light source related
     "light-location": [0.0, 0.0, 1.0],
     "light-focus": [0.0, 0.0, 0.0],
     "light-size": 2.0,
@@ -18,10 +16,8 @@
     "light-adaptive": false,
     "light-jitter": true,
 
-    // Background related
     "background-colour": "",
 
-    // Atom texture
     "element-textures":{
         "default": {
             "texture": [],
@@ -31,9 +27,10 @@
             "use-colour": true,
             "normal": [],
             "normal...prototype": "bumps",
-            "finish": ["specular 0.5", "metallic"]
-            },
-    },
+            "finish": ["specular 0.5", "metallic"],
+            "use-colour": true
+            }
+        },
     "element-textures...update": "extend",
     "element-textures...prototype-key": "default",
 
@@ -48,7 +45,6 @@
     "element-radii...update": "extend",
     "element-radii...prototype-key": "default",
 
-    // Bonds related
     "compute-bonds": false,
 
     "covalent-radii": {},
@@ -66,8 +62,6 @@
     "bond-finish": [],
     "bond-finish...prototype": "metallic",
 
-    // Pov-ray invocation
     "pov-ray-program": "povray",
-    "graph-width": 1024,
-
+    "graph-width": 1024
 }

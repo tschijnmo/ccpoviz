@@ -1,7 +1,7 @@
 {
     // Camera related
     "projection-method": "perspective",
-    "camera-focus": "molecule-centre",
+    "camera-focus": [0.0, 0.0, 0.0],
     "camera-distance": 20.0,
     "camera-theta": 0.0,
     "camera-phi": 90.0,
@@ -25,30 +25,46 @@
     "element-textures":{
         "default": {
             "texture": [],
+            "texture...prototype": "wood",
             "pigment": [],
+            "pigment...prototype": "blue",
             "use-colour": true,
             "normal": [],
+            "normal...prototype": "bumps",
             "finish": ["specular 0.5", "metallic"]
             },
     },
+    "element-textures...update": "extend",
+    "element-textures...prototype-key": "default",
 
     "element-colour-scheme": "Jmol",
     "element-colour-change": {},
+    "element-colour-change...update": "extend",
+    "element-colour-change...prototype": "red",
 
     "element-radii": {
         "default": 0.4
     },
+    "element-radii...update": "extend",
+    "element-radii...prototype-key": "default",
 
     // Bonds related
     "compute-bonds": false,
+
     "covalent-radii": {},
+    "covalent-radii...update": "extend",
+    "covalent-radii...prototype": 1.0,
+
     "multiple-bond-separation": 0.3,
     "partial-bond-dash-size": 0.3,
     "bond-cylinder-radius": 0.1,
     "bond-texture": ["T_Wood7"],
     "bond-pigment": [],
+    "bond-pigment...prototype": "wood",
     "bond-normal": [],
+    "bond-normal...prototype": "bumps",
     "bond-finish": [],
+    "bond-finish...prototype": "metallic",
 
     // Pov-ray invocation
     "pov-ray-program": "povray",

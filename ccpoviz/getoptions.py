@@ -133,18 +133,24 @@ def get_options(mol_ops, mol, proj_ops):
                 config_dicts.append(yaml.load(content))
             except yaml.parser.ParserError as err:
                 terminate_program(
-                    ('Configuration file %i cannot be parsed as YAML \n' % i) +
-                    ('%s' % err)
+                    ('Configuration file %i cannot be parsed as YAML \n' % i)
+                    + ('%s' % err)
                     )
         else:
             try:
                 config_dicts.append(json.loads(content))
             except ValueError as err:
                 terminate_program(
-                    ('Configuration file %i cannot be parsed as JSON \n' % i) +
-                    ('%s' % err)
+                    ('Configuration file %i cannot be parsed as JSON \n' % i)
+                    + ('%s' % err)
                     )
 
     config_dicts.append(default)
 
-    return ChainOptions().chain_options(*config_dicts)  # pylint: disable=star-args
+    try:
+        return ChainOptions().chain_options(*config_dicts)  # pylint: disable=star-args
+    except ValueError as err:
+        terminate_program(
+            'Invalid configuration: \n' +
+            ('%s' % err)
+            )

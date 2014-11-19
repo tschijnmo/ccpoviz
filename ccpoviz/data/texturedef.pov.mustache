@@ -1,0 +1,30 @@
+/*
+The texture definition partial for the main pov-ray template
+============================================================
+
+It can be used in several occasions when a specification of texture is needed.
+But the fields ``texture``, ``pigment``, ``normal``, and ``finish`` must be
+string lists giving series of settings for the respective options.
+
+*/
+
+texture {
+    {{#texture}}
+    {{{.}}}
+    {{/texture}}
+    pigment {
+        {{#pigment}}
+        {{{.}}}
+        {{/pigment}}
+    }
+    normal {
+        {{#normal}}
+        {{{.}}}
+        {{/normal}}
+    }
+    finish {
+        {{#finish}}
+        {{{.}}}
+        {{/finish}}
+    }
+}

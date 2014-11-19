@@ -1,0 +1,91 @@
+/*
+Default POV-Ray mustache template for ccpoviz
+=============================================
+
+This file is going to be rendered by the ccpoviz program to generate the input
+file for the POV-Ray visualization of the molecular geometry plots.
+
+*/
+
+
+//
+// Standard includes
+// -----------------
+//
+
+#include "colors.inc"    // The include files contain
+#include "stones.inc"    // pre-defined scene elements
+#include "textures.inc"    // pre-defined scene elements
+#include "shapes.inc"
+#include "glass.inc"
+#include "metals.inc"
+#include "woods.inc"
+
+
+//
+// Camera definition
+// -----------------
+//
+
+camera {
+    {{#camera}}
+    {{{op-name}}} {{{op-value}}}
+    {{/camera}}
+}
+
+
+//
+// Light source definition
+// -----------------------
+//
+
+light_source {
+    {{{light-location}}}
+    color {{{light-colour}}}
+    area_light {{{light-area-vec-1}}}, {{{light-area-vec-2}}}, {{{light-number}}}, {{{light-number}}}
+    adaptive {{{light-adaptive}}}
+    {{#light-jitter}}jitter{{/light-jitter}}
+}
+
+
+//
+// Background definition
+// ---------------------
+//
+
+{{#use-background}}
+backgroud {
+    {{#background-settings}}
+    {{{.}}}
+    {{/background-settings}}
+}
+{{/use-background}}
+
+//
+// Atoms Definition
+// ----------------
+//
+
+{{#atoms}}
+sphere {
+    {{{location}}}, {{{radius}}}
+    {{> texturedef}}
+}
+{{/atoms}}
+
+
+//
+// Bonds Definition
+// ----------------
+//
+
+{{#bonds}}
+cylinder {
+    {{{begin}}},
+    {{{end}}},
+    {{{radius}}}
+    {{> texturedef}}
+}
+{{/atoms}}
+
+

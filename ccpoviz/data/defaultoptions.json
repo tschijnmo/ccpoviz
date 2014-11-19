@@ -19,6 +19,7 @@
     "light-jitter": true,
 
     // Background related
+    "background-colour": "",
 
     // Atom texture
     "element-textures":{
@@ -50,4 +51,7 @@
     "bond-finish": [],
 
     // Pov-ray invocation
+    "pov-ray-program": "povray",
+    "graph-width": 1024,
+
 }

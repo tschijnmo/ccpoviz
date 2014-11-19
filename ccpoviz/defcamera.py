@@ -45,6 +45,9 @@ def compute_pos_ops(focus, distance, theta, phi, rotation, aspect_ratio):
     option value under the tag ``op-value``. This can be direct used for
     rendering the pov-ray input mustache template.
 
+    The location and focus of the camera is also returned for later usage when
+    defining the light source.
+
     All the angles should be in radian.
 
     """
@@ -71,10 +74,10 @@ def compute_pos_ops(focus, distance, theta, phi, rotation, aspect_ratio):
         ('look_at', format_vector(focus))
     ]
 
-    return [
+    return ([
         {'op-name': i[0], 'op-value': i[1]}
         for i in ret_val
-    ]
+    ], camera_pos, focus)
 
 
 def gen_camera_ops(ops_dict, structure):
@@ -88,7 +91,8 @@ def gen_camera_ops(ops_dict, structure):
     :param structure: The structure to plot
     :returns: A list of dictionaries for rendering the camera in the pov-ray
         mustache template. The resulted list can be assigned to a key in the
-        rendering dictionary.
+        rendering dictionary. And the location and the focus of the camera is
+        also returned.
 
     """
 

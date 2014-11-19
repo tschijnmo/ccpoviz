@@ -9,6 +9,7 @@ setup(
     install_requires = [
         'docutils>=0.3',
         'pystache>=0.5',
+        'PyYAML>=3.11',
         ],
 
     package_data = {

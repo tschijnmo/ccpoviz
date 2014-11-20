@@ -17,7 +17,7 @@ from .util import terminate_program
 
 
 def run_pov_core(povray_prog, input_file, output_file, width, aspect_ratio,
-                 additional_arg=None):
+                 additional_arg=None, suppress_out=True, add_print=False):
 
     """Invokes the pov-ray program
 
@@ -37,12 +37,23 @@ def run_pov_core(povray_prog, input_file, output_file, width, aspect_ratio,
     additional_arg = [] or additional_arg
     height = round(width / aspect_ratio)
 
-    return subprocess.call(
-        [
-            povray_prog, '+I%s' % input_file, '+W%d' % width,
-            '+H%d' % height, '+O%s' % output_file
+    args = [
+        povray_prog, '+I%s' % input_file, '+W%d' % width,
+        '+H%d' % height, '+O%s' % output_file
         ] + additional_arg
+
+    if add_print:
+        print("Calling Pov-ray as:")
+        print(' '.join(args))
+
+    proc = subprocess.Popen(
+        args, stdout=(subprocess.PIPE if suppress_out else None),
+        stderr=subprocess.STDOUT
         )
+
+    _ = proc.communicate()
+
+    return proc.poll()
 
 
 def run_pov(output_file, if_keep, ops_dict):
@@ -57,16 +68,20 @@ def run_pov(output_file, if_keep, ops_dict):
     """
 
     input_file = output_file.split('.')[0] + '.pov'
+    additional_arg = [
+        '+A',
+        ('+Q%d' % ops_dict['quality']),
+        ]
     if ops_dict['background-colour'] == '':
-        additional_arg = ['+UA']
-    else:
-        additional_arg = []
+        additional_arg.append('+UA')
 
     try:
         ret_code = run_pov_core(
             ops_dict['pov-ray-program'], input_file, output_file,
             ops_dict['graph-width'], ops_dict['aspect-ratio'],
-            additional_arg=additional_arg
+            additional_arg=additional_arg,
+            suppress_out=ops_dict['suppress-povray-out'],
+            add_print=ops_dict['additional-printing']
             )
     except OSError:
         terminate_program('Pov-ray cannot be invoked!')

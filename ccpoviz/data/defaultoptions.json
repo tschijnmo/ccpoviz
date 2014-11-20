@@ -67,5 +67,8 @@
     "bond-finish...prototype": "metallic",
 
     "pov-ray-program": "povray",
-    "graph-width": 1024
+    "graph-width": 1024,
+    "quality": 5,
+    "suppress-povray-out": true,
+    "additional-printing": false
 }

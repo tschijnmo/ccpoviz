@@ -12,7 +12,7 @@ import re
 
 import pkg_resources
 
-from .chainoptions import ChainOptions
+from .chainoptions import ChainOptions, UpdateError
 from .util import terminate_program
 
 
@@ -147,10 +147,11 @@ def get_options(mol_ops, mol, proj_ops):
 
     config_dicts.append(default)
 
+    chainer = ChainOptions(default_coercion=True)
     try:
-        return ChainOptions(default_coercion=True).chain_options(*config_dicts)  # pylint: disable=star-args
-    except ValueError as err:
+        return chainer.chain_options(*config_dicts)  # pylint: disable=star-args
+    except UpdateError as err:
         terminate_program(
             'Invalid configuration: \n' +
-            ('%s' % err)
+            chainer.format_update_error(err)
             )

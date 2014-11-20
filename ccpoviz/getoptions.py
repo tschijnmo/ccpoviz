@@ -86,7 +86,7 @@ def get_options(mol_ops, mol, proj_ops):
             import yaml
             try:
                 mol_dict = yaml.load('\n'.join(yaml_lines))
-            except yaml.parser.ParserError as err:
+            except (yaml.parser.ParserError, yaml.parser.ScannerError) as err:
                 terminate_program(
                     'Input title cannot be parsed as YAML.\n' +
                     ('%s' % err)

@@ -148,7 +148,7 @@ def get_options(mol_ops, mol, proj_ops):
     config_dicts.append(default)
 
     try:
-        return ChainOptions().chain_options(*config_dicts)  # pylint: disable=star-args
+        return ChainOptions(default_coercion=True).chain_options(*config_dicts)  # pylint: disable=star-args
     except ValueError as err:
         terminate_program(
             'Invalid configuration: \n' +

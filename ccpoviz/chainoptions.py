@@ -232,7 +232,7 @@ def _find_type(node, tag=('', ), user=False):
         return _BOOL
     elif isinstance(node, int) or isinstance(node, float):
         return _NUMBER
-    elif isinstance(node, str):
+    elif isinstance(node, str) or isinstance(node, unicode):
         return _STRING
     elif isinstance(node, list):
         return _LIST

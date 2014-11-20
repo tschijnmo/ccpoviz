@@ -4,7 +4,7 @@ setup(
     name = "ccpoviz",
     version = "0.0.1",
     packages = find_packages(),
-    scripts = ['scripts/ccpoviz'],
+    scripts = ['scripts/ccpoviz', 'scripts/iPerspective'],
 
     install_requires = [
         'docutils>=0.3',

@@ -99,3 +99,27 @@ sphere {
 {{/bonds}}
 
 
+//
+// Coordinates Definition (Optional)
+// ---------------------------------
+//
+
+{{#axes}}
+cylinder {
+    {{{begin}}},
+    {{{end}}},
+    {{{radius}}}
+    texture {
+        pigment { colour {{{colour}}} }
+    }
+}
+cone {
+    {{{end}}}, {{{tip-base-radius}}}
+    {{{tip}}}, 0.0
+    texture {
+        pigment { colour {{{colour}}} }
+    }
+}
+{{/axes}}
+
+

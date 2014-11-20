@@ -17,6 +17,9 @@
     "light-jitter": true,
 
     "background-colour": "",
+    "draw-axes": false,
+    "axes-length": 2.0,
+    "axes-radius": 0.05,
 
     "element-textures":{
         "default": {

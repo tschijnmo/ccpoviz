@@ -15,6 +15,7 @@ from .defcamera import gen_camera_ops
 from .deflightsource import gen_light_ops
 from .drawatms import draw_atms
 from .drawbonds import draw_bonds
+from .drawaxes import draw_axes
 
 
 def gen_render_dict(structure, ops_dict):
@@ -46,6 +47,12 @@ def gen_render_dict(structure, ops_dict):
         if_bkg = True
     render_dict['use-background'] = if_bkg
     render_dict['background-settings'] = bkg_list
+
+    if ops_dict['draw-axes']:
+        axes_list = draw_axes(cam_foc, ops_dict)
+    else:
+        axes_list = []
+    render_dict['axes'] = axes_list
 
     return render_dict
 

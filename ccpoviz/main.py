@@ -10,10 +10,7 @@ called by the executable of the program.
 
 import argparse
 
-from .readstructure import read_structure
-from .getoptions import get_options
-from .renderpov import render_pov
-from .runpov import run_pov
+from .renderdriver import render_driver
 
 
 def main():
@@ -42,19 +39,9 @@ def main():
                         ' the input file')
     args = parser.parse_args()
 
-    # Read the molecule
-    input_file = args.INPUT[0]
-    structure = read_structure(input_file, args.reader)
-
-    # Get the options
-    options = get_options(args.molecule_option, structure, args.project_option)
-
-    if args.output is None:
-        output = input_file.split('.')[0] + '.png'
-    else:
-        output = args.output
-
-    render_pov(structure, output, options)
-    run_pov(output, args.keep, options)
+    render_driver(
+        args.INPUT[0], args.reader, args.molecule_option,
+        args.project_option, args.output, args.keep
+        )
 
     return 0

@@ -131,9 +131,9 @@ def get_options(mol_ops, mol, proj_ops):
             import yaml
             try:
                 config_dicts.append(yaml.load(content))
-            except yaml.parser.ParserError as err:
+            except (yaml.parser.ParserError, yaml.parser.ScannerError) as err:
                 terminate_program(
-                    ('Configuration file %i cannot be parsed as YAML \n' % i)
+                    ('Configuration file %s cannot be parsed as YAML \n' % i)
                     + ('%s' % err)
                     )
         else:
@@ -141,7 +141,7 @@ def get_options(mol_ops, mol, proj_ops):
                 config_dicts.append(json.loads(content))
             except ValueError as err:
                 terminate_program(
-                    ('Configuration file %i cannot be parsed as JSON \n' % i)
+                    ('Configuration file %s cannot be parsed as JSON \n' % i)
                     + ('%s' % err)
                     )
 
